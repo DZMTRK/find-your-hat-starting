@@ -19,40 +19,69 @@ class Field {
         console.log(i.join(' '));
     };       
   }
-}
 
-const playGame = new Field([
-    [pathCharacter,  fieldCharacter, hole,           fieldCharacter],
-    [hole,           fieldCharacter, hole,           fieldCharacter],
-    [fieldCharacter, fieldCharacter, fieldCharacter, fieldCharacter],
-    [fieldCharacter, hole,           hole,           hole          ],
-    [fieldCharacter, fieldCharacter, hat,            hole          ]
-]);
-playGame.print();
-let playerPosition = [0, 0];
+  static generateField(hight, width, holePercent) {
+    let generate = [];
+    for (let i = 0; i < hight; i++) {
+        generate.push([]);
+        for (let j = 0; j < width; j++) {
+            generate[i].push(fieldCharacter);
+        };
+    };
 
-function checkHat(playerPosition) {
-    if (playerPosition[0] < playGame.playField.length) {
-        if (playGame.playField[playerPosition[0]][playerPosition[1]] === hat) {
+    placeHoles ();
+    placeHat ();
+
+
+    function placeHoles () {
+        let k = holePercent/100;
+        let amountOfHoles = hight*width*k;
+        while (amountOfHoles > 0) {
+            let i = Math.floor(Math.random()*hight);
+            let j = Math.floor(Math.random()*width);
+            if (!checkCollision(i, j)) {
+                generate[i][j] = hole;
+            } else amountOfHoles++;
+            amountOfHoles--;
+        };
+    };
+
+    function placeHat () {
+        let amountOfHat = 1;
+        while (amountOfHat > 0) {
+            let i = Math.floor(Math.random()*hight);
+            let j = Math.floor(Math.random()*width);
+            if (!checkCollision(i, j)) {
+                generate[i][j] = hat;
+                amountOfHat--;
+            };
+        };
+    };
+
+    function checkCollision (i, j) {
+        if ((generate[i][j] == hole) || (generate[i][j] == hat)) {
             return true;
         } else return false;
     };
-};
 
-function checkHole(playerPosition) {
-    if (playerPosition[0] < playGame.playField.length) {
-        if (playGame.playField[playerPosition[0]][playerPosition[1]] === hole) {
-            return true;
-        } else return false;
-    };  
-};
+    return generate;
+  }
+}
 
-function checkOutOfBorders(playerPosition) {
-    if ((playerPosition[0] >= playGame.playField.length ) ||  ((playerPosition[1] < 0 ) || (playerPosition[1] >  playGame.playField[playerPosition[0]].length - 1))) {
-        return true;
-    } else return false;
-};
+let hight = prompt("Let's create a new playfield! Enter the hight of the field: ");
+hight = Number(hight);
 
+let width = prompt("Now define the width of the field: ");
+width = Number(width);
+
+let amountOfHoles = prompt("Define percentage of the holes on the playerfield: ");
+amountOfHoles = Number(amountOfHoles);
+
+const playGame = new Field(Field.generateField(hight,width,amountOfHoles));
+let playerPosition = [0, 0];
+playGame.playField[playerPosition[0]][playerPosition[1]] = pathCharacter;
+
+playGame.print();
 
 while (playerPosition[0] <=  playGame.playField.length - 1) {
 
@@ -80,7 +109,29 @@ while (playerPosition[0] <=  playGame.playField.length - 1) {
 
     playGame.print();
 
-};    
+};
+
+function checkHat(playerPosition) {
+    if (playerPosition[0] < playGame.playField.length) {
+        if (playGame.playField[playerPosition[0]][playerPosition[1]] === hat) {
+            return true;
+        } else return false;
+    };
+};
+
+function checkHole(playerPosition) {
+    if (playerPosition[0] < playGame.playField.length) {
+        if (playGame.playField[playerPosition[0]][playerPosition[1]] === hole) {
+            return true;
+        } else return false;
+    };  
+};
+
+function checkOutOfBorders(playerPosition) {
+    if ((playerPosition[0] >= playGame.playField.length ) ||  ((playerPosition[1] < 0 ) || (playerPosition[1] >  playGame.playField[playerPosition[0]].length - 1))) {
+        return true;
+    } else return false;
+};
 
     
 
